@@ -2,6 +2,15 @@
 Huge Angel app that implements every single feature of the framework.
 This is also a way to test the Angel framework for hidden bugs.
 
+To start, run this command:
+
+    dart bin/server.dart
+
+The main server is a parent app that showcases the following features:
+* `app.use`
+* Static file serving via [angel_static](https://github.com/angel-dart/angel_static)
+* Dynamic app configuration via [angel_configuration](https://github.com/angel-dart/angel_configuration)
+
 It contains a few sub-apps:
 
 * [Calculator](#calculator)
