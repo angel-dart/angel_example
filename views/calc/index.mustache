@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.1/semantic.min.css">
+    <style>
+        .inverted.secondary.segment.transparent {
+            background-color: transparent;
+        }
+
+        #frame {
+            transition: background-color ease-in 1000ms;
+        }
+    </style>
+</head>
+<body style="background-image: url('/img/space.jpg'); background-size: cover;">
+<div class="ui large inverted secondary pointing menu">
+    <div class="ui container">
+        <div class="active header item">
+            <i class="calculator icon"></i>
+            Calculator
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.1/semantic.min.js"></script>
+<div class="ui center aligned container">
+    <div class="ui top attached inverted secondary transparent segment" id="frame">
+        <div class="ui large fluid left icon transparent inverted input">
+            <i class="percent icon"></i>
+            <input name="expression" type="text">
+        </div>
+    </div>
+    <div class="ui attached inverted secondary segment transparent" id="buttons">
+        <div class="ui four column grid">
+            <div class="column">
+                <div class="ui basic inverted calc button" data-value="7">7</div>
+            </div>
+            <div class="column">
+                <div class="ui basic inverted calc button" data-value="8">8</div>
+            </div>
+            <div class="column">
+                <div class="ui basic inverted calc button" data-value="9">9</div>
+            </div>
+            <div class="column">
+                <div class="ui basic inverted operator button" data-operator="/">/</div>
+            </div>
+        </div>
+        <div class="ui four column grid">
+            <div class="column">
+                <div class="ui basic inverted calc button" data-value="4">4</div>
+            </div>
+            <div class="column">
+                <div class="ui basic inverted calc button" data-value="5">5</div>
+            </div>
+            <div class="column">
+                <div class="ui basic inverted calc button" data-value="6">6</div>
+            </div>
+            <div class="column">
+                <div class="ui icon basic inverted operator button" data-operator="*">
+                    <i class="asterisk icon"></i>
+                </div>
+            </div>
+        </div>
+        <div class="ui four column grid">
+            <div class="column">
+                <div class="ui basic inverted calc button" data-value="1">1</div>
+            </div>
+            <div class="column">
+                <div class="ui basic inverted calc button" data-value="2">2</div>
+            </div>
+            <div class="column">
+                <div class="ui basic inverted calc button" data-value="3">3</div>
+            </div>
+            <div class="column">
+                <div class="ui icon basic inverted operator button" data-operator="-">
+                    <i class="minus icon"></i>
+                </div>
+            </div>
+        </div>
+        <div class="ui four column grid">
+            <div class="column">
+                <div class="ui basic inverted calc button" data-value="0">0</div>
+            </div>
+            <div class="column">
+                <div class="ui basic inverted calc button" data-value=".">.</div>
+            </div>
+            <div class="column">
+                <div class="ui basic inverted icon neg button">
+                    <i class="minus icon"></i>
+                </div>
+            </div>
+            <div class="column">
+                <div class="ui icon basic inverted operator button" data-operator="+">
+                    <i class="plus icon"></i>
+                </div>
+            </div>
+        </div>
+        <div class="ui one column grid">
+            <div class="column">
+                <div class="ui fluid basic inverted button" id="equals">
+                    <i class="calculator icon"></i>
+                    Calculate!
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="ui fluid center aligned inverted segment"
+     style="bottom: 0; margin-bottom: 0; position: absolute; width: 100%">
+    Powered by <a class="ui inverted link" href="https://github.com/angel-dart/angel">Angel</a>
+</div>
+<script>
+    $(function () {
+        var expression = $("[name='expression']");
+        var error = $("#error");
+        var frame = $("#frame");
+
+        function clearError() {
+            if (!/^([0-9]|(\(|\)|\^|\*|\+|\-|%|\/|\.| ))+$/.test(expression.val().trim())) {
+                expression.val("");
+            }
+        }
+
+        $(".calc.button").click(function () {
+            clearError();
+            expression.val(expression.val() + $(this).attr("data-value"));
+        });
+        $(".neg.button").click(function () {
+            clearError();
+            expression.val("-" + expression.val());
+        });
+        $(".operator.button").click(function () {
+            clearError();
+            expression.val(expression.val() + " " + $(this).attr("data-operator") + " ");
+        });
+        $("#equals").click(function () {
+            if (expression.val()) {
+                error.fadeOut();
+                $.ajax({
+                    url: "/calc/dsl/calculate",
+                    type: "POST",
+                    contentType: "application/json; charset=UTF-8",
+                    data: JSON.stringify({expression: expression.val()}),
+                    dataType: "json",
+                    error: function (xhr, status, err) {
+                        console.info(xhr.response);
+                        console.error(err);
+                        setTimeout(function () {
+                            frame.css("background-color", "transparent")
+                        }, 1000);
+                        frame.css("background-color", "rgba(255, 0, 0, .4)");
+                        expression.val("Calculation error.");
+                    },
+                    success: function (data) {
+                        setTimeout(function () {
+                            frame.css("background-color", "transparent")
+                        }, 1000);
+                        frame.css("background-color", "rgba(0, 255, 0, .4)");
+                        expression.val(data);
+                    }
+                });
+            } else alert("Please enter an expression.");
+        });
+    });
+</script>
+</body>
+</html>

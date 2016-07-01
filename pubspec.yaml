@@ -1,0 +1,12 @@
+name: angel_example
+description: Huge Angel app that implements every single feature of the framework.
+dependencies:
+  antlr4dart: ^0.7.0
+  angel_configuration: ^1.0.0
+  angel_framework: ^1.0.0-dev
+  angel_mustache: ^1.0.0-dev
+  angel_static: ^1.0.0
+  colorize: ^0.1.2
+  json_god: ^2.0.0-beta
+  mongo_dart: ^0.2.8
+publish_to: none
